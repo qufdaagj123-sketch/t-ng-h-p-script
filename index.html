@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Script Hub - Cyberpunk Edition</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-deep: #030407;
+            --panel-bg: rgba(8, 12, 22, 0.8);
+            --border-color: rgba(0, 255, 153, 0.25);
+            --border-glow: rgba(0, 255, 153, 0.6);
+            --neon-green: #00ff99;
+            --neon-cyan: #00e5ff;
+            --neon-purple: #9d00ff;
+            --neon-pink: #ff007f;
+            --text-main: #c0ffd6;
+            --text-muted: #6b8a7a;
+            --font-main: 'Share Tech Mono', monospace;
+            --font-head: 'Orbitron', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(157, 0, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(0, 255, 153, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(0, 0, 0, 0.5) 50%, rgba(0, 255, 153, 0.01) 50%);
+            background-size: 100% 4px;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Navbar Style */
+        .navbar {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-brand {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-tab-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-family: var(--font-head);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-tab-btn.active, .nav-tab-btn:hover {
+            background: rgba(0, 255, 153, 0.1);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 153, 0.2);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-cyber {
+            background: linear-gradient(135deg, rgba(0,255,153,0.15), rgba(0,229,255,0.15));
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cyber:hover {
+            background: var(--neon-green);
+            color: var(--bg-deep);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        .btn-cyber-outline {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .btn-cyber-outline:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-deep);
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(157, 0, 255, 0.15);
+            border: 1px solid var(--neon-purple);
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #d8b4fe;
+            font-size: 0.9rem;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1300px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Grid Layout cho Script Hub */
+        .hub-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+        }
+
+        @media(max-width: 900px) {
+            .hub-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-family: var(--font-head);
+            font-size: 0.95rem;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Stats Widget */
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        .online-badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .mini-badge {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--neon-cyan);
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--neon-green);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            height: 130px;
+        }
+
+        /* Search Bar & Feed Header */
+        .feed-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 240px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 9px 12px 9px 36px;
+            color: var(--neon-green);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Script Grid */
+        .script-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .script-card {
+            background: rgba(8, 12, 20, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .script-card:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 153, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .script-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--neon-green);
+        }
+
+        .script-name {
+            font-family: var(--font-head);
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 6px;
+            word-break: break-all;
+        }
+
+        .script-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .game-tag {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .code-preview {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            height: 75px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-card {
+            flex: 1;
+            padding: 7px;
+            border-radius: 6px;
+            font-family: var(--font-head);
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-copy {
+            background: rgba(0, 255, 153, 0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+        .btn-copy:hover { background: var(--neon-green); color: var(--bg-deep); }
+
+        .btn-detail {
+            background: rgba(157, 0, 255, 0.1);
+            border: 1px solid var(--neon-purple);
+            color: #d8b4fe;
+        }
+        .btn-detail:hover { background: var(--neon-purple); color: #fff; }
+
+        .btn-edit {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .btn-edit:hover { background: var(--neon-cyan); color: var(--bg-deep); }
+
+        .btn-delete {
+            background: rgba(255, 0, 127, 0.1);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        .btn-delete:hover { background: var(--neon-pink); color: var(--bg-deep); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+            background: var(--panel-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+        }
+
+        /* Global Chat Room Layout */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
+            max-height: 700px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(16px);
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-head);
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-msg {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 3px solid var(--neon-cyan);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            max-width: 80%;
+        }
+
+        .chat-msg.mine {
+            border-left-color: var(--neon-green);
+            align-self: flex-end;
+            border-left: none;
+            border-right: 3px solid var(--neon-green);
+            border-radius: 8px 0 0 8px;
+            background: rgba(0, 255, 153, 0.05);
+        }
+
+        .chat-msg-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            gap: 15px;
+        }
+
+        .chat-msg-author {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        .chat-msg.mine .chat-msg-author {
+            color: var(--neon-green);
+        }
+
+        .chat-msg-text {
+            font-size: 0.9rem;
+            color: #fff;
+            word-break: break-word;
+        }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--neon-green);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(5, 5, 10, 0.95);
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 153, 0.4);
+            color: var(--neon-green);
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 3000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand" onclick="switchTab('hub')">
+            <i class="fa-solid fa-code" style="color: var(--neon-green);"></i> NEXUS SCRIPT HUB
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab-btn active" id="tabBtnHub" onclick="switchTab('hub')">
+                <i class="fa-solid fa-layer-group"></i> Kho Script
+            </button>
+            <button class="nav-tab-btn" id="tabBtnChat" onclick="switchTab('chat')">
+                <i class="fa-solid fa-comments"></i> Chat Chung
+            </button>
+        </div>
+        <div class="nav-actions" id="navAuthArea">
+            <!-- Render dynamically -->
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- TAB 1: SCRIPT HUB -->
+        <div class="tab-content active" id="tabHub">
+            <div class="hub-layout">
+                
+                <!-- Left Column: Stats & Optional Create Form -->
+                <div>
+                    <!-- Community Stats Widget -->
+                    <div class="panel" style="margin-bottom: 20px;">
+                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> THỐNG KÊ CỘNG ĐỒNG</div>
+                        <div class="stat-item">
+                            <span>Tổng Thành Viên:</span>
+                            <span class="stat-value" id="statTotalUsers">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Đang Trực Tuyến:</span>
+                            <span class="stat-value" id="statOnlineUsers">0</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">Thành viên đang online:</div>
+                        <div class="online-badges-container" id="onlineBadgesList">
+                            <!-- Badges -->
+                        </div>
+                    </div>
+
+                    <!-- Upload Form Box -->
+                    <div class="panel" id="uploadPanelBox">
+                        <div class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> ĐĂNG TẢI SCRIPT</div>
+                        <div id="uploadPromptNotice" style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 15px 0;">
+                            Vui lòng <a href="#" onclick="openAuthModal('login')" style="color: var(--neon-cyan);">Đăng nhập</a> hoặc <a href="#" onclick="openAuthModal('register')" style="color: var(--neon-green);">Đăng ký</a> để đăng tải script của bạn!
+                        </div>
+                        <form id="uploadForm" onsubmit="handleUploadSubmit(event)" style="display: none;">
+                            <input type="hidden" id="editScriptId" value="">
+                            <div class="form-group">
+                                <label>Tiêu đề Script</label>
+                                <input type="text" id="scriptTitle" class="form-control" placeholder="Ví dụ: Auto Farm V3..." required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Tên Tựа Game Roblox</label>
+                                <input type="text" id="scriptGame" class="form-control" placeholder="Ví dụ: Blox Fruits..." required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Đoạn mã Luau / Script</label>
+                                <textarea id="scriptCode" class="form-control" placeholder="loadstring(game:HttpGet(...))()" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-cyber" id="btnSubmitScript" style="width: 100%; justify-content: center; padding: 12px;">
+                                <i class="fa-solid fa-rocket"></i> Đăng Tải Script
+                            </button>
+                            <button type="button" class="btn-cyber btn-cyber-outline" id="btnCancelEdit" onclick="cancelEditMode()" style="width: 100%; justify-content: center; padding: 8px; margin-top: 8px; display: none;">
+                                Hủy Chỉnh Sửa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: Script Feed -->
+                <div>
+                    <div class="feed-top-bar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="searchInput" placeholder="Tìm kiếm script, tên game, tác giả..." oninput="renderScripts()">
+                        </div>
+                    </div>
+                    <div class="script-grid" id="scriptGrid">
+                        <!-- Scripts rendered here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: GLOBAL CHAT ROOM -->
+        <div class="tab-content" id="tabChat">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <i class="fa-solid fa-satellite-dish"></i> PHÒNG CHAT CỘNG ĐỒNG TOÀN CẦU
+                </div>
+                <div class="chat-messages" id="chatMessagesList">
+                    <!-- Chat items -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInputText" placeholder="Nhập tin nhắn thảo luận script..." autocomplete="off" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button class="btn-cyber" onclick="sendChatMessage()">
+                        <i class="fa-solid fa-paper-plane"></i> Gửi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: CHI TIẾT SCRIPT -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('detailModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title" id="modalScriptName">Chi Tiết Script</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Tác giả: <span id="modalAuthor" style="color: var(--neon-cyan);"></span> | Game: <span id="modalGame" style="color: var(--neon-green);"></span></div>
+            <textarea class="form-control" id="modalCodeText" readonly style="height: 220px; margin-bottom: 15px;"></textarea>
+            <button class="btn-cyber" onclick="copyModalCode()" style="width: 100%; justify-content: center; padding: 10px;">
+                <i class="fa-solid fa-copy"></i> Sao Chép Toàn Bộ Mã
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: ĐĂNG NHẬP / ĐĂNG KÝ -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-box" style="max-width: 400px;">
+            <button class="modal-close" onclick="closeModal('authModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title" id="authModalTitle">ĐĂNG NHẬP HỆ THỐNG</div>
+            <form onsubmit="handleAuthSubmit(event)">
+                <div class="form-group">
+                    <label>Tên tài khoản</label>
+                    <input type="text" id="authUsername" class="form-control" placeholder="Nhập tên tài khoản..." required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="authPassword" class="form-control" placeholder="Nhập mật khẩu..." required>
+                </div>
+                <button type="submit" class="btn-cyber" id="authSubmitBtn" style="width: 100%; justify-content: center; padding: 11px; margin-top: 5px;">
+                    Đăng Nhập
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 15px; font-size: 0.8rem; color: var(--text-muted);" id="authToggleText">
+                Chưa có tài khoản? <a href="#" onclick="toggleAuthMode()" style="color: var(--neon-green);">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check" style="color: var(--neon-green);"></i>
+        <span id="toastMsg">Thành công!</span>
+    </div>
+
+    <script>
+        // --- QUẢN LÝ LOCALSTORAGE & TRẠNG THÁI KHỞI TẠO HOÀN TOÀN TRỐNG ---
+        if (!localStorage.getItem('nexus_scripts')) {
+            localStorage.setItem('nexus_scripts', JSON.stringify([])); // Hoàn toàn trống như yêu cầu
+        }
+        if (!localStorage.getItem('nexus_users')) {
+            localStorage.setItem('nexus_users', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('nexus_chats')) {
+            localStorage.setItem('nexus_chats', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('nexus_logged_in')) {
+            localStorage.setItem('nexus_logged_in', '');
+        }
+
+        let isRegisterMode = false;
+
+        // --- CHUYỂN TAB ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
+
+            if (tabName === 'hub') {
+                document.getElementById('tabHub').classList.add('active');
+                document.getElementById('tabBtnHub').classList.add('active');
+            } else if (tabName === 'chat') {
+                document.getElementById('tabChat').classList.add('active');
+                document.getElementById('tabBtnChat').classList.add('active');
+                renderChatMessages();
+            }
+        }
+
+        // --- XÁC THỰC TÀI KHOẢN (AUTH) ---
+        function updateNavbarAuth() {
+            const currentUser = localStorage.getItem('nexus_logged_in');
+            const authArea = document.getElementById('navAuthArea');
+            const uploadPrompt = document.getElementById('uploadPromptNotice');
+            const uploadForm = document.getElementById('uploadForm');
+
+            if (currentUser) {
+                authArea.innerHTML = `
+                    <div class="user-badge"><i class="fa-solid fa-user-secret"></i> ${currentUser}</div>
+                    <button class="btn-cyber btn-cyber-outline" onclick="handleLogout()" style="padding: 6px 12px; font-size: 0.75rem;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+                `;
+                uploadPrompt.style.display = 'none';
+                uploadForm.style.display = 'block';
+            } else {
+                authArea.innerHTML = `
+                    <button class="btn-cyber btn-cyber-outline" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập</button>
+                    <button class="btn-cyber" onclick="openAuthModal('register')"><i class="fa-solid fa-user-plus"></i> Đăng Ký</button>
+                `;
+                uploadPrompt.style.display = 'block';
+                uploadForm.style.display = 'none';
+            }
+            renderScripts();
+        }
+
+        function openAuthModal(mode) {
+            isRegisterMode = (mode === 'register');
+            document.getElementById('authModalTitle').textContent = isRegisterMode ? 'ĐĂNG KÝ TÀI KHOẢN MỚI' : 'ĐĂNG NHẬP HỆ THỐNG';
+            document.getElementById('authSubmitBtn').textContent = isRegisterMode ? 'Đăng Ký' : 'Đăng Nhập';
+            document.getElementById('authToggleText').innerHTML = isRegisterMode 
+                ? `Đã có tài khoản? <a href="#" onclick="toggleAuthMode()" style="color: var(--neon-cyan);">Đăng nhập ngay</a>`
+                : `Chưa có tài khoản? <a href="#" onclick="toggleAuthMode()" style="color: var(--neon-green);">Đăng ký ngay</a>`;
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('authModalTitle').textContent = isRegisterMode ? 'ĐĂNG KÝ TÀI KHOẢN MỚI' : 'ĐĂNG NHẬP HỆ THỐNG';
+            document.getElementById('authSubmitBtn').textContent = isRegisterMode ? 'Đăng Ký' : 'Đăng Nhập';
+            document.getElementById('authToggleText').innerHTML = isRegisterMode 
+                ? `Đã có tài khoản? <a href="#" onclick="toggleAuthMode()" style="color: var(--neon-cyan);">Đăng nhập ngay</a>`
+                : `Chưa có tài khoản? <a href="#" onclick="toggleAuthMode()" style="color: var(--neon-green);">Đăng ký ngay</a>`;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const user = document.getElementById('authUsername').value.trim();
+            const pass = document.getElementById('authPassword').value.trim();
+            let users = JSON.parse(localStorage.getItem('nexus_users')) || [];
+
+            if (isRegisterMode) {
+                if (users.some(u => u.username === user)) {
+                    showToast('Tên tài khoản này đã tồn tại!', true);
+                    return;
+                }
+                users.push({ username: user, password: pass });
+                localStorage.setItem('nexus_users', JSON.stringify(users));
+                localStorage.setItem('nexus_logged_in', user);
+                closeModal('authModal');
+                updateNavbarAuth();
+                showToast('Đăng ký và đăng nhập thành công!');
+            } else {
+                const found = users.find(u => u.username === user && u.password === pass);
+                if (!found) {
+                    showToast('Sai tên tài khoản hoặc mật khẩu!', true);
+                    return;
+                }
+                localStorage.setItem('nexus_logged_in', user);
+                closeModal('authModal');
+                updateNavbarAuth();
+                showToast('Đăng nhập thành công!');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.setItem('nexus_logged_in', '');
+            updateNavbarAuth();
+            showToast('Đã đăng xuất tài khoản!');
+            cancelEditMode();
+        }
+
+        // --- REAL-TIME SIMULATION WIDGET (THỐNG KÊ & BADGES) ---
+        function updateStatsSimulation() {
+            let users = JSON.parse(localStorage.getItem('nexus_users')) || [];
+            let totalMembers = Math.max(142, users.length + 128); // Giả lập sinh động cộng đồng
+            let onlineCount = Math.floor(Math.random() * 15) + 24;
+
+            document.getElementById('statTotalUsers').textContent = totalMembers;
+            document.getElementById('statOnlineUsers').textContent = onlineCount;
+
+            // Danh sách badge online giả lập kết hợp user thật nếu có
+            let sampleBadges = ['CyberGhost', 'ScriptX', 'ViperVN', 'BloxKing', 'DarkCoder', 'NekoScript', 'NullPtr', 'ZenoDev'];
+            let loggedUser = localStorage.getItem('nexus_logged_in');
+            if (loggedUser && !sampleBadges.includes(loggedUser)) {
+                sampleBadges.unshift(loggedUser);
+            }
+
+            let badgeHtml = '';
+            for (let i = 0; i < Math.min(onlineCount, sampleBadges.length); i++) {
+                badgeHtml += `<span class="mini-badge"><i class="fa-solid fa-circle" style="font-size: 5px; color: var(--neon-green);"></i> ${sampleBadges[i]}</span>`;
+            }
+            document.getElementById('onlineBadgesList').innerHTML = badgeHtml;
+        }
+
+        // --- QUẢN LÝ SCRIPT HUB ---
+        function renderScripts() {
+            const keyword = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+            const scripts = JSON.parse(localStorage.getItem('nexus_scripts')) || [];
+            const grid = document.getElementById('scriptGrid');
+            const currentUser = localStorage.getItem('nexus_logged_in');
+
+            const filtered = scripts.filter(s => 
+                s.title.toLowerCase().includes(keyword) || 
+                s.game.toLowerCase().includes(keyword) || 
+                s.author.toLowerCase().includes(keyword)
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-box-open fa-2x" style="margin-bottom: 12px; color: var(--neon-cyan);"></i>
+                        <p style="font-family: var(--font-head); font-size: 1rem; color: #fff; margin-bottom: 5px;">Chưa có script nào được chia sẻ</p>
+                        <p style="font-size: 0.85rem;">Hãy là người đầu tiên đăng tải đoạn mã của bạn lên hệ thống!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.reverse().map(s => {
+                const isOwner = (currentUser && currentUser === s.author);
+                return `
+                    <div class="script-card">
+                        <div>
+                            <div class="script-name">${escapeHtml(s.title)}</div>
+                            <div class="script-meta">
+                                <span>Tác giả: <strong style="color: var(--neon-cyan);">${escapeHtml(s.author)}</strong></span>
+                                <span class="game-tag">${escapeHtml(s.game)}</span>
+                            </div>
+                            <div class="code-preview">${escapeHtml(s.code)}</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-card btn-copy" onclick="copyScript('${encodeURIComponent(s.code)}')">
+                                <i class="fa-solid fa-copy"></i> Sao chép
+                            </button>
+                            <button class="btn-card btn-detail" onclick="openDetailModal('${s.id}')">
+                                <i class="fa-solid fa-eye"></i> Xem
+                            </button>
+                            ${isOwner ? `
+                                <button class="btn-card btn-edit" onclick="startEditScript('${s.id}')">
+                                    <i class="fa-solid fa-pen"></i> Sửa
+                                </button>
+                                <button class="btn-card btn-delete" onclick="deleteScript('${s.id}')">
+                                    <i class="fa-solid fa-trash"></i> Xóa
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleUploadSubmit(e) {
+            e.preventDefault();
+            const currentUser = localStorage.getItem('nexus_logged_in');
+            if (!currentUser) {
+                showToast('Vui lòng đăng nhập trước khi đăng bài!', true);
+                return;
+            }
+
+            const editId = document.getElementById('editScriptId').value;
+            const title = document.getElementById('scriptTitle').value.trim();
+            const game = document.getElementById('scriptGame').value.trim();
+            const code = document.getElementById('scriptCode').value.trim();
+
+            if (!title || !game || !code) {
+                showToast('Vui lòng điền đầy đủ thông tin script!', true);
+                return;
+            }
+
+            let scripts = JSON.parse(localStorage.getItem('nexus_scripts')) || [];
+
+            if (editId) {
+                // Chế độ chỉnh sửa (Chỉ chủ nhân mới thao tác được qua kiểm tra quyền)
+                const index = scripts.findIndex(s => s.id === editId);
+                if (index !== -1 && scripts[index].author === currentUser) {
+                    scripts[index].title = title;
+                    scripts[index].game = game;
+                    scripts[index].code = code;
+                    localStorage.setItem('nexus_scripts', JSON.stringify(scripts));
+                    showToast('Đã cập nhật script thành công!');
+                } else {
+                    showToast('Bạn không có quyền chỉnh sửa bài viết này!', true);
+                }
+                cancelEditMode();
+            } else {
+                // Đăng mới
+                const newScript = {
+                    id: Date.now().toString(),
+                    title,
+                    game,
+                    author: currentUser,
+                    code
+                };
+                scripts.push(newScript);
+                localStorage.setItem('nexus_scripts', JSON.stringify(scripts));
+                document.getElementById('uploadForm').reset();
+                showToast('Đăng tải script thành công!');
+            }
+
+            renderScripts();
+        }
+
+        function startEditScript(id) {
+            const scripts = JSON.parse(localStorage.getItem('nexus_scripts')) || [];
+            const script = scripts.find(s => s.id === id);
+            const currentUser = localStorage.getItem('nexus_logged_in');
+
+            if (!script || script.author !== currentUser) {
+                showToast('Bạn không có quyền chỉnh sửa script này!', true);
+                return;
+            }
+
+            document.getElementById('editScriptId').value = script.id;
+            document.getElementById('scriptTitle').value = script.title;
+            document.getElementById('scriptGame').value = script.game;
+            document.getElementById('scriptCode').value = script.code;
+            document.getElementById('btnSubmitScript').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Lưu Thay Đổi`;
+            document.getElementById('btnCancelEdit').style.display = 'block';
+            
+            // Cuộn lên form
+            document.getElementById('uploadPanelBox').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEditMode() {
+            document.getElementById('editScriptId').value = '';
+            document.getElementById('uploadForm').reset();
+            document.getElementById('btnSubmitScript').innerHTML = `<i class="fa-solid fa-rocket"></i> Đăng Tải Script`;
+            document.getElementById('btnCancelEdit').style.display = 'none';
+        }
+
+        function deleteScript(id) {
+            const currentUser = localStorage.getItem('nexus_logged_in');
+            let scripts = JSON.parse(localStorage.getItem('nexus_scripts')) || [];
+            const script = scripts.find(s => s.id === id);
+
+            if (!script || script.author !== currentUser) {
+                showToast('Bạn không có quyền xóa script này!', true);
+                return;
+            }
+
+            if (confirm('Bạn có chắc chắn muốn xóa vĩnh viễn script này?')) {
+                scripts = scripts.filter(s => s.id !== id);
+                localStorage.setItem('nexus_scripts', JSON.stringify(scripts));
+                renderScripts();
+                showToast('Đã xóa script thành công!');
+            }
+        }
+
+        function copyScript(encodedCode) {
+            const code = decodeURIComponent(encodedCode);
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Đã sao chép mã Luau vào Clipboard!');
+            }).catch(() => {
+                showToast('Không thể sao chép văn bản!', true);
+            });
+        }
+
+        function openDetailModal(id) {
+            const scripts = JSON.parse(localStorage.getItem('nexus_scripts')) || [];
+            const script = scripts.find(s => s.id === id);
+            if (!script) return;
+
+            document.getElementById('modalScriptName').textContent = script.title;
+            document.getElementById('modalAuthor').textContent = script.author;
+            document.getElementById('modalGame').textContent = script.game;
+            document.getElementById('modalCodeText').value = script.code;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function copyModalCode() {
+            const text = document.getElementById('modalCodeText').value;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Đã sao chép toàn bộ mã thành công!');
+            });
+        }
+
+        // --- GLOBAL CHAT ROOM ---
+        function renderChatMessages() {
+            const chats = JSON.parse(localStorage.getItem('nexus_chats')) || [];
+            const currentUser = localStorage.getItem('nexus_logged_in');
+            const chatList = document.getElementById('chatMessagesList');
+
+            if (chats.length === 0) {
+                chatList.innerHTML = `<div style="text-align: center; color: var(--text-muted); margin: auto; font-size: 0.9rem;">Chưa có tin nhắn nào. Hãy gửi lời chào đến cộng đồng!</div>`;
+                return;
+            }
+
+            chatList.innerHTML = chats.map(c => {
+                const isMine = (currentUser && c.author === currentUser);
+                return `
+                    <div class="chat-msg ${isMine ? 'mine' : ''}">
+                        <div class="chat-msg-header">
+                            <span class="chat-msg-author">${escapeHtml(c.author)}</span>
+                            <span>${c.time}</span>
+                        </div>
+                        <div class="chat-msg-text">${escapeHtml(c.text)}</div>
+                    </div>
+                `;
+            }).join('');
+            chatList.scrollTop = chatList.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const currentUser = localStorage.getItem('nexus_logged_in');
+            if (!currentUser) {
+                showToast('Vui lòng đăng nhập để tham gia chat chung!', true);
+                openAuthModal('login');
+                return;
+            }
+
+            const input = document.getElementById('chatInputText');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            let chats = JSON.parse(localStorage.getItem('nexus_chats')) || [];
+            chats.push({
+                author: currentUser,
+                text: text,
+                time: timeStr
+            });
+
+            // Giữ lại tối đa 50 tin nhắn gần nhất
+            if (chats.length > 50) chats.shift();
+
+            localStorage.setItem('nexus_chats', JSON.stringify(chats));
+            input.value = '';
+            renderChatMessages();
+        }
+
+        // --- TOAST HELPER ---
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const icon = toast.querySelector('i');
+
+            toastMsg.textContent = message;
+            if (isError) {
+                toast.style.borderColor = 'var(--neon-pink)';
+                toast.style.boxShadow = '0 0 15px rgba(255, 0, 127, 0.4)';
+                icon.className = 'fa-solid fa-triangle-exclamation';
+                icon.style.color = 'var(--neon-pink)';
+            } else {
+                toast.style.borderColor = 'var(--neon-green)';
+                toast.style.boxShadow = '0 0 15px rgba(0, 255, 153, 0.4)';
+                icon.className = 'fa-solid fa-circle-check';
+                icon.style.color = 'var(--neon-green)';
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- HTML ESCAPE HELPER ---
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // --- KHỞI CHẠY KHI TẢI TRANG ---
+        window.onload = () => {
+            updateNavbarAuth();
+            updateStatsSimulation();
+            // Cập nhật thống kê định kỳ mô phỏng real-time nhẹ nhàng
+            setInterval(updateStatsSimulation, 10000);
+        };
+    </script>
+</body>
+</html>
